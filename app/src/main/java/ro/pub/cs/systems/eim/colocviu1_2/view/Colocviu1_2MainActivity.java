@@ -129,6 +129,8 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             System.out.println("Got something from service");
             Log.d(Constants.BROADCAST_RECEIVER_TAG, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
+            String a = intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA);
+            Toast.makeText(getApplicationContext(), a, Toast.LENGTH_LONG).show();
         }
     }
 
