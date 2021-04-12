@@ -20,7 +20,10 @@ public class Colocviu1_2SecondaryActivity extends AppCompatActivity {
             String[] arrOfStr = computeString.split("\\+");
             int result = 0;
             for (String s:arrOfStr) {
-                result += Integer.valueOf(s);
+                System.out.println(s);
+                if(!s.equals("")) {
+                    result += Integer.valueOf(s.trim());
+                }
             }
             setResult(result, null);
             finish();

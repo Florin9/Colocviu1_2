@@ -17,6 +17,9 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     private EditText allTermsEditText;
     private Button addButton, computeButton;
     private ButtonClickListener buttonClickListener = new ButtonClickListener();
+    private int modified = 0;
+    private int computeResult = 0;
+    private Toast old_toast;
 
     private class ButtonClickListener implements View.OnClickListener {
 
@@ -24,7 +27,10 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             String inputString = nextTermEditText.getText().toString();
             nextTermEditText.setText("");
-            int inputNumber = Integer.valueOf(inputString);
+            int inputNumber = 0;
+            if(!inputString.equals("")) {
+                inputNumber = Integer.valueOf(inputString);
+            }
             String allTerms = allTermsEditText.getText().toString();
 
             switch(view.getId()) {
@@ -32,6 +38,7 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
                     if (allTerms.equals("")){
                         String newString = String.valueOf(inputNumber);
                         allTermsEditText.setText(newString);
+                        modified = 1;
                         break;
                     } else {
                         String newString = allTerms + " + " + inputNumber;
@@ -40,11 +47,16 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
                     }
 
                 case R.id.compute_button:
-                    Intent intent = new Intent(getApplicationContext(), Colocviu1_2SecondaryActivity.class);
-                    String computeString = allTermsEditText.getText().toString();
-                    intent.putExtra(Constants.COMPUTE_STRING, computeString);
-                    startActivityForResult(intent, Constants.SECONDARY_ACTIVITY_REQUEST_CODE);
-                    break;
+                    if(modified == 1) {
+                        modified = 0;
+                        Intent intent = new Intent(getApplicationContext(), Colocviu1_2SecondaryActivity.class);
+                        String computeString = allTermsEditText.getText().toString();
+                        intent.putExtra(Constants.COMPUTE_STRING, computeString);
+                        startActivityForResult(intent, Constants.SECONDARY_ACTIVITY_REQUEST_CODE);
+                        break;
+                    } else {
+                        old_toast.show();
+                    }
             }
         }
     }
@@ -65,7 +77,30 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == Constants.SECONDARY_ACTIVITY_REQUEST_CODE) {
-            Toast.makeText(this, "The computed value is: " + resultCode, Toast.LENGTH_LONG).show();
+            computeResult = resultCode;
+            old_toast = Toast.makeText(this, "The computed value is: " + resultCode, Toast.LENGTH_LONG);
+            old_toast.show();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(Constants.COMPUTE_RESULT, computeResult);
+        savedInstanceState.putString(Constants.COMPUTE_STRING, allTermsEditText.getText().toString());
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(Constants.COMPUTE_RESULT)) {
+            computeResult = savedInstanceState.getInt(Constants.COMPUTE_RESULT)
+        } else {
+            computeResult = 0;
+        }
+        if (savedInstanceState.containsKey(Constants.COMPUTE_STRING)) {
+            allTermsEditText.setText(savedInstanceState.getString(Constants.COMPUTE_STRING));
+        } else {
+            allTermsEditText.setText("");
         }
     }
 }
