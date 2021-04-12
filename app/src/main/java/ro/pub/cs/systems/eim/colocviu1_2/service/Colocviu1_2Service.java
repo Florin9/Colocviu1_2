@@ -11,6 +11,7 @@ public class Colocviu1_2Service extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        System.out.println("service started");
         int firstNumber = intent.getIntExtra(Constants.SUM, -1);
         processingThread = new ProcessingThread(this, firstNumber);
         processingThread.start();

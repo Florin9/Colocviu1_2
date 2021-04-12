@@ -55,12 +55,6 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
                     }
 
                 case R.id.compute_button:
-                    if(computeResult >= 10 && serviceStatus == 0) {
-                        Intent intent = new Intent(getApplicationContext(), Colocviu1_2Service.class);
-                        intent.putExtra(Constants.SUM, computeResult);
-                        getApplicationContext().startService(intent);
-                        serviceStatus = 1;
-                    }
                     if (modified == 1) {
                         modified = 0;
                         Intent intent = new Intent(getApplicationContext(), Colocviu1_2SecondaryActivity.class);
@@ -98,6 +92,13 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
             computeResult = resultCode;
             old_toast = Toast.makeText(this, "The computed value is: " + resultCode, Toast.LENGTH_LONG);
             old_toast.show();
+            if(computeResult >= 10 && serviceStatus == 0) {
+                System.out.println("Starting service ...");
+                Intent intent2 = new Intent(getApplicationContext(), Colocviu1_2Service.class);
+                intent2.putExtra(Constants.SUM, computeResult);
+                getApplicationContext().startService(intent2);
+                serviceStatus = 1;
+            }
         }
     }
 
@@ -126,6 +127,7 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     private class MessageBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            System.out.println("Got something from service");
             Log.d(Constants.BROADCAST_RECEIVER_TAG, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
         }
     }
@@ -140,5 +142,12 @@ public class Colocviu1_2MainActivity extends AppCompatActivity {
     protected void onPause() {
         unregisterReceiver(messageBroadcastReceiver);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, Colocviu1_2Service.class);
+        stopService(intent);
+        super.onDestroy();
     }
 }
